@@ -1,0 +1,62 @@
+{% extends "catalog_app/base.html" %}
+
+{% block content %}
+  {% comment %} <h1>Local Library Home</h1>
+  <p>Welcome to LocalLibrary, a website developed by <em>Mozilla Developer Network</em>!</p>
+  <h2>Dynamic content</h2>
+  <p>The library has the following record counts:</p>
+  <ul>
+    <li><strong>Books:</strong> {{ num_books }}</li>
+    <li><strong>Copies:</strong> {{ num_instances }}</li>
+    <li><strong>Copies available:</strong> {{ num_instances_available }}</li>
+    <li><strong>Authors:</strong> {{ num_authors }}</li>
+  </ul> {% endcomment %}
+
+<h1>List of books</h1>
+  <div class="row">
+  {% for book in books  %}
+
+
+<div class="column nature">
+    <div class="content">
+      <img src="{{ book.book_image.url }}" style="width:100%">
+      <p class="title">{{ book.title }}</p>
+        <p>{{ book.author }}</p>
+        {% if book.borrowed == True %}
+          <p><button class="button" disabled>Already Borrowed</button></p>
+        {% else %}
+          <form action="{% url 'catalog_app:borrowing_a_book' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="pk" value="{{ book.pk }}">
+            <button type="submit"class="button">Borrow</button>
+          </form>
+        {% endif %}
+    </div>
+  </div>
+
+  {% endfor  %}
+</div>
+
+<h1>List of magazines</h1>
+  <div class="row">
+{% comment %}   {% for magazine in magazines  %}
+
+
+<div class="column nature">
+    <div class="content">
+      <img src="" style="width:100%">
+      <p class="title">{{ magazine.collection }}</p>
+        <p>{{ magazine.issue }}</p>
+        <p>{{ magazine.issue_date }}</p>
+        <p><button class="button">Borrow</button></p>
+    </div>
+  </div>
+
+  {% endfor  %} {% endcomment %}
+</div>
+      
+
+
+
+
+{% endblock %}

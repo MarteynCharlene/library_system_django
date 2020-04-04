@@ -1,0 +1,25 @@
+{% extends "catalog_app/base.html" %}
+{% block content %}
+    <div class="content-section">
+      <div class="media">
+        <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
+        <div class="media-body">
+          <h2 class="account-heading">{{ user.username }}</h2>
+          <p class="text-secondary">{{ user.email }}</p>
+        </div>
+      </div>
+      <form action="{% url 'delete_account' %}" method="POST">
+          {% csrf_token %}
+          <fieldset class="form-group">
+              <legend class="border-bottom mb-4">Delete account</legend>
+              <input type="password" name="password" placeholder="Your password here...">
+              <br />
+              <input type="text" name="confirm_deletion" placeholder="Type DELETE here...">
+             <br />
+          </fieldset>
+          <div class="form-group">
+              <button class="btn btn-outline-info" type="submit">Delete</button>
+          </div>
+      </form>
+    </div>
+{% endblock content %}
