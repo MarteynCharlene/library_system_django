@@ -1,0 +1,64 @@
+{% extends "catalog_app/base.html" %}
+
+{% block content %}
+  <h1>My Borrowed books</h1>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Book title</th>
+          <th scope="col">return before</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+
+      {% for book_borrowed in books_borrowed %} 
+      <tr>
+      <th scope="row"></th>
+      <td>{{book_borrowed.title}}</td>
+      <td>{{ book_borrowed.due_back }}</td>
+      <td><form action="{% url 'catalog_app:return_book' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="pk" value="{{ book_borrowed.pk }}">
+            <button type="submit" class="btn btn-outline-info">Return</button>
+          </form></td>
+      </tr>
+      {% endfor %}
+  </tbody>
+</table>
+
+
+    <h1>My Borrowed magazines</h1>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Magazine Collection</th>
+          <th scope="col">Magazine issue</th>
+          <th scope="col">return before</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+  
+      {% for magazine_borrowed in magazines_borrowed %} 
+      <tr>
+      <th scope="row"></th>
+      <td>{{magazine_borrowed.collection}}</td>
+      <td>{{magazine_borrowed.issue}}</td>
+      <td>{{ magazine_borrowed.due_back }}</td>
+      <td><form action="{% url 'catalog_app:return_magazine' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="pk" value="{{ magazine_borrowed.pk }}">
+            <button type="submit" class="btn btn-outline-info">Return</button>
+          </form></td>
+      </tr>
+      {% endfor %}
+    
+
+
+
+
+
+{% endblock %}

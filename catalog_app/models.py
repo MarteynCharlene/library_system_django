@@ -9,56 +9,24 @@ class Book(models.Model):
     book_image = models.ImageField(default='default.jpg', upload_to='book_pics')
     summary = models.TextField(max_length=1000, help_text="Enter a brief description of the book")
     borrowed = models.BooleanField(default=False)
+    due_back = models.DateField(null=True, blank=True)
+    borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.title} - {self.author}"
+        return f"{self.title} - {self.author} - {self.borrowed} - {self.due_back} - {self.borrower} "
 
 class Magazine(models.Model):
-    name = models.CharField(max_length=200, null=True)
     collection = models.ForeignKey('Collection', on_delete=models.SET_NULL, null=True)
     magazine_image = models.ImageField(default='default.jpg', upload_to='magazine_pics')
     issue = models.CharField(max_length=200)
     issue_date = models.DateField(null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.name} - {self.collection} - {self.magazine_image} - {self.issue} - {self.issue_date}"
-
-class BookInstance(models.Model):
-    """Model representing a specific copy of a book (i.e. that can be borrowed from the library)."""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                          help_text="Unique ID for this particular book across whole library")
-    book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True)
+    borrowed = models.BooleanField(default=False)
+    borrowed_date = models.DateField(null=True, blank=True)
     due_back = models.DateField(null=True, blank=True)
     borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
-    @property
-    def is_overdue(self):
-        if self.due_back and date.today() > self.due_back:
-            return True
-        return False
-
-    LOAN_STATUS = (
-        ('d', 'Maintenance'),
-        ('o', 'On loan'),
-        ('a', 'Available'),
-        ('r', 'Reserved'),
-    )
-
-    status = models.CharField(
-        max_length=1,
-        choices=LOAN_STATUS,
-        blank=True,
-        default='d',
-        help_text='Book availability')
-
-    class Meta:
-        ordering = ['due_back']
-        permissions = (("can_mark_returned", "Set book as returned"),)
-
     def __str__(self):
-        """String for representing the Model object."""
-        return '{0} ({1})'.format(self.id, self.book.title)
-
+        return f"{self.collection} - {self.magazine_image} - {self.issue} - {self.issue_date}"
 
 class Author(models.Model):
     """Model representing an author."""
@@ -74,7 +42,7 @@ class Author(models.Model):
 
     def __str__(self):
         """String for representing the Model object."""
-        return '{0}, {1}'.format(self.last_name, self.first_name)
+        return '{0} {1}'.format(self.first_name, self.last_name)
 
 
 class Collection(models.Model):

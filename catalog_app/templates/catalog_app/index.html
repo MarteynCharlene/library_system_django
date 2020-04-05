@@ -1,62 +1,107 @@
 {% extends "catalog_app/base.html" %}
 
 {% block content %}
-  {% comment %} <h1>Local Library Home</h1>
-  <p>Welcome to LocalLibrary, a website developed by <em>Mozilla Developer Network</em>!</p>
-  <h2>Dynamic content</h2>
-  <p>The library has the following record counts:</p>
-  <ul>
-    <li><strong>Books:</strong> {{ num_books }}</li>
-    <li><strong>Copies:</strong> {{ num_instances }}</li>
-    <li><strong>Copies available:</strong> {{ num_instances_available }}</li>
-    <li><strong>Authors:</strong> {{ num_authors }}</li>
-  </ul> {% endcomment %}
+
+{% if user.is_superuser %}
+<h1>Books and magazines to be returned</h1>
+
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Book title</th>
+          <th scope="col">.</th>
+          <th scope="col">Return before</th>
+          <th scope="col">Borrower</th>
+          <th scope="col">.</th>
+        </tr>
+      </thead>
+      <tbody>
+
+      {% for book_overdue in books_overdue %} 
+      <tr>
+      <th scope="row"></th>
+      <td>{{book_overdue.title}}</td>
+      <td></td>
+      <td>{{ book_overdue.due_back }}</td>
+      <td>{{ book_overdue.borrower }}</td>
+      <td><a class="btn btn-outline-info" href="">Send reminder</a>  </td>
+      </tr>
+      {% endfor %}
+  </tbody>
+  </table>
+<br>
+<br>
+<table class="table table-hover">
+  <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Magazine Collection</th>
+          <th scope="col">Magazine issue</th>
+          <th scope="col">Return before</th>
+          <th scope="col">Borrower</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+       <tbody>
+      {% for magazine_overdue in magazines_overdue %}  
+      <tr>
+      <th scope="row"></th>
+      <td>{{magazine_overdue.collection}}</td>
+      <td>{{ magazine_overdue.issue }}</td>
+      <td>{{ magazine_overdue.due_back }}</td>
+      <td>{{ magazine_overdue.borrower }}</td>
+      <td><a class="btn btn-outline-info" href="">Send reminder</a>  </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+</table>
+{% endif %}
+
+
 
 <h1>List of books</h1>
-  <div class="row">
-  {% for book in books  %}
 
-
-<div class="column nature">
-    <div class="content">
-      <img src="{{ book.book_image.url }}" style="width:100%">
+<div class="card-columns">
+{% for book in books  %}
+  <div class="card card bg-light">
+    <div class="card-body text-center">
       <p class="title">{{ book.title }}</p>
-        <p>{{ book.author }}</p>
-        {% if book.borrowed == True %}
+      <p>{{ book.author }}</p>
+      {% if book.borrowed == True %}
           <p><button class="button" disabled>Already Borrowed</button></p>
-        {% else %}
+      {% else %}
           <form action="{% url 'catalog_app:borrowing_a_book' %}" method="POST">
             {% csrf_token %}
             <input type="hidden" name="pk" value="{{ book.pk }}">
             <button type="submit"class="button">Borrow</button>
           </form>
-        {% endif %}
+      {% endif %}
     </div>
   </div>
-
-  {% endfor  %}
+ {% endfor  %}
 </div>
 
 <h1>List of magazines</h1>
-  <div class="row">
-{% comment %}   {% for magazine in magazines  %}
 
-
-<div class="column nature">
-    <div class="content">
-      <img src="" style="width:100%">
+<div class="card-columns">
+  {% for magazine in magazines  %}
+  <div class="card card bg-light">
+    <div class="card-body text-center">
       <p class="title">{{ magazine.collection }}</p>
-        <p>{{ magazine.issue }}</p>
-        <p>{{ magazine.issue_date }}</p>
-        <p><button class="button">Borrow</button></p>
+      <p>issue {{ magazine.issue }} - {{ magazine.issue_date }}</p>
+      {% if magazine.borrowed == True %}
+          <p><button class="button" disabled>Already Borrowed</button></p>
+        {% else %}
+          <form action="{% url 'catalog_app:borrowing_a_magazine' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="pk" value="{{ magazine.pk }}">
+            <button type="submit"class="button">Borrow</button>
+          </form>
+        {% endif %}
     </div>
   </div>
-
-  {% endfor  %} {% endcomment %}
+ {% endfor  %}
 </div>
-      
-
-
-
 
 {% endblock %}

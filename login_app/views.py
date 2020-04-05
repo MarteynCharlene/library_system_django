@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib import messages
 from django.contrib.auth import authenticate
+from . models import PasswordResetRequest
 
 def register(request):
     if request.method == 'POST':
@@ -17,6 +18,54 @@ def register(request):
     else:
         form = UserRegisterForm()
     return render(request, 'login_app/register.html', {'form': form})
+
+def request_password_reset(request):
+ if request.method == "POST":
+     post_user = request.POST['username']
+     user = None
+
+     if post_user:
+         try:
+             user = User.objects.get(username=post_user)
+         except:
+             print(f"Invalid password request: {post_user}")
+     else:
+         post_user = request.POST['email']
+         try:
+             user = User.objects.get(email=post_user)
+         except:
+             print(f"Invalid password request: {post_user}")
+     if user:
+         prr = PasswordResetRequest()
+         prr.user = user
+         prr.save()
+         print(prr)
+         return redirect('password_reset')
+
+ return render(request, 'login_app/request_password_reset.html')
+
+def password_reset(request):
+    if request.method == "POST":
+        post_user = request.POST['username']
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+        token = request.POST['token']
+
+        if password == confirm_password:
+            try:
+                prr = PasswordResetRequest.objects.get(token=token)
+                prr.save()
+            except:
+                print("Invalid password reset attempt.")
+                return render(request, 'login_app/password_reset.html')
+                
+            user = prr.user
+            user.set_password(password)
+            user.save()
+            return redirect('login')
+
+
+    return render(request, 'login_app/password_reset.html')
 
 @login_required
 def profile(request):
@@ -56,3 +105,4 @@ def delete_account(request):
                 print("fail delete")
 
     return render(request, 'login_app/delete_account.html')
+

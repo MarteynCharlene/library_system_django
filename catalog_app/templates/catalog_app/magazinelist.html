@@ -1,0 +1,28 @@
+{% extends "catalog_app/base.html" %}
+
+{% block content %}
+    <h1>All borrowed magazines</h1>
+    
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Magazine Collection</th>
+          <th scope="col">Magazine issue</th>
+          <th scope="col">Return before</th>
+          <th scope="col">Borrower</th>
+        </tr>
+      </thead>
+      <tbody>
+  
+      {% for magazine in magazines %} 
+      <tr>
+      <th scope="row"></th>
+      <td>{{magazine.collection}}</td>
+      <td>{{magazine.issue}}</td>
+      <td>{{ magazine.due_back }}</td>
+      <td>{{ magazine.borrower }}</td>
+      </tr>
+      {% endfor %}
+  
+{% endblock %}

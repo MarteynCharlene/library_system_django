@@ -9,6 +9,9 @@ app_name = 'catalog_app'
 urlpatterns = [
     path('', views.index, name='index2'),
     path('borrowing_a_book', views.borrowing_a_book, name='borrowing_a_book'),  
+    path('borrowing_a_magazine', views.borrowing_a_magazine, name='borrowing_a_magazine'),
+    path('return_book', views.return_book, name='return_book'),
+    path('return_magazine', views.return_magazine, name='return_magazine'),
 ]
 
 if settings.DEBUG: 
